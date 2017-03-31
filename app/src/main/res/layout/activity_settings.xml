@@ -11,9 +11,11 @@
         android:id="@+id/tvBeginDateLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/begin_date"
+        android:layout_alignBaseline="@+id/etBeginDate"
+        android:layout_alignBottom="@+id/etBeginDate"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="@string/begin_date"
         android:layout_toLeftOf="@+id/etBeginDate"
         android:layout_toStartOf="@+id/etBeginDate" />
 
