@@ -31,12 +31,10 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
     EditText etQuery;
-    // GridView gvResults;
     RecyclerView rvResults;
     Button btnSearch;
 
     ArrayList<Article> articles;
-    // ArticleArrayAdapter arrAdapter;
     ArticlesAdapter adapter;
 
     @Override
@@ -53,27 +51,6 @@ public class SearchActivity extends AppCompatActivity {
         btnSearch = (Button) findViewById(R.id.btnSearch);
 
         articles = new ArrayList<>();
-
-        // Set up for Grid View
-        // gvResults = (GridView) findViewById(R.id.gvResults);
-        // arrAdapter = new ArticleArrayAdapter(this, articles);
-        // gvResults.setAdapter(arrAdapter);
-
-        // hook up listener for grid click
-
-//        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                // create intent to display article
-//                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-//                // get article
-//                Article article = articles.get(position);
-//                // pass in article to intent
-//                i.putExtra("article", article);
-//                // launch activity
-//                startActivity(i);
-//            }
-//        });
 
         // Set up Recycler View
         rvResults = (RecyclerView) findViewById(R.id.rvResults);
@@ -143,7 +120,6 @@ public class SearchActivity extends AppCompatActivity {
 
                 try {
                     articleJSONResults = response.getJSONObject("response").getJSONArray("docs");
-                    // arrAdapter.addAll(Article.fromJsonArray(articleJSONResults));
 
                     // for the recycler view
                     ArrayList<Article> arr = Article.fromJsonArray(articleJSONResults);
