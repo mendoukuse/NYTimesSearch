@@ -37,8 +37,5 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support.constraint:constraint-layout:+'
-}
-dependencies {
     compile 'com.squareup.picasso:picasso:2.6.0-SNAPSHOT'
 }
