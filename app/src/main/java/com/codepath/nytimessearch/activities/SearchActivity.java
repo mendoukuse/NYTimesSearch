@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
 import com.codepath.nytimessearch.models.Article;
+import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -36,6 +37,12 @@ public class SearchActivity extends AppCompatActivity {
 
     ArrayList<Article> articles;
     ArticlesAdapter adapter;
+
+    EndlessRecyclerViewScrollListener scrollListener;
+
+    // Filters
+    String query;
+    int page = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +83,18 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        // Retain an instance so that you can call `resetState()` for fresh searches
+        scrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadDataFromApi(page);
+            }
+        };
+
+        rvResults.addOnScrollListener(scrollListener);
     }
 
     @Override
@@ -101,15 +120,34 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void onArticleSearch(View view) {
-        String query = etQuery.getText().toString();
+        String q = etQuery.getText().toString();
 
         // Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG).show();
+        if (q != query) {
+            resetApiQueryParameters(q);
+        }
+        loadDataFromApi(page);
+    }
+
+    private void resetApiQueryParameters(String q) {
+        query = q;
+        page = 0;
+
+        int numberOfItems = adapter.getItemCount();
+        if (numberOfItems > 0) {
+            articles.clear();
+            adapter.notifyItemRangeRemoved(0, numberOfItems);
+            scrollListener.resetState();
+        }
+    }
+
+    private void loadDataFromApi(int page) {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
 
         RequestParams params = new RequestParams();
         params.put("api-key", "476d52719f654648b8622ef5830a4568");
-        params.put("page", 0);
+        params.put("page", page);
         params.put("q", query);
 
         client.get(url, params, new JsonHttpResponseHandler() {
