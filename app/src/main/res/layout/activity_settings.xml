@@ -26,9 +26,10 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_marginBottom="30dp"
         android:ems="10"
-        android:inputType="date"
-        android:layout_marginBottom="30dp"/>
+        android:hint="@string/date_hint"
+        android:inputType="date" />
 
     <TextView
         android:id="@+id/tvSortOrderLabel"
@@ -104,5 +105,6 @@
         android:layout_height="wrap_content"
         android:text="@string/save"
         android:layout_below="@+id/cbSports"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="saveSettingsFilters"/>
 </RelativeLayout>

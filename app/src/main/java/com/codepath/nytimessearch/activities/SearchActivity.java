@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
+    final int SETTINGS_REQUEST_CODE = 1;
+
     EditText etQuery;
     RecyclerView rvResults;
     Button btnSearch;
@@ -114,11 +117,18 @@ public class SearchActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
-            startActivityForResult(i, 0);
+            startActivityForResult(i, SETTINGS_REQUEST_CODE);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == SETTINGS_REQUEST_CODE) {
+            Toast.makeText(this, data.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onArticleSearch(View view) {
