@@ -4,4 +4,11 @@
     <string name="hint">Enter search query</string>
     <string name="search">Search</string>
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="begin_date">Begin Date</string>
+    <string name="sort_order">Sort Order</string>
+    <string name="news_desk_values">News Desk Values</string>
+    <string name="arts">Arts</string>
+    <string name="fasion_amp_style"><![CDATA[Fasion & Style]]></string>
+    <string name="sports">Sports</string>
+    <string name="save">Save</string>
 </resources>

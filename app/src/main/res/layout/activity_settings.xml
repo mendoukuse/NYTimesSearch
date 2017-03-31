@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.nytimessearch.activities.SettingsActivity"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tvBeginDateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="@string/begin_date"
+        android:layout_toLeftOf="@+id/etBeginDate"
+        android:layout_toStartOf="@+id/etBeginDate" />
+
+    <EditText
+        android:id="@+id/etBeginDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:inputType="date"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:id="@+id/tvSortOrderLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etBeginDate"
+        android:layout_toLeftOf="@+id/etBeginDate"
+        android:layout_toStartOf="@+id/etBeginDate"
+        android:text="@string/sort_order" />
+
+    <Spinner
+        android:id="@+id/spSortOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etBeginDate"
+        android:layout_toRightOf="@+id/tvSortOrderLabel"
+        android:layout_toEndOf="@+id/tvSortOrderLabel"
+        android:layout_alignLeft="@+id/etBeginDate"
+        android:layout_alignStart="@+id/etBeginDate"
+        android:entries="@array/sort_order_array"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:id="@+id/tvCategoriesLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/spSortOrder"
+        android:layout_toLeftOf="@+id/spSortOrder"
+        android:layout_toStartOf="@+id/spSortOrder"
+        android:text="@string/news_desk_values" />
+
+    <CheckBox
+        android:id="@+id/cbArts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spSortOrder"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/spSortOrder"
+        android:layout_below="@+id/spSortOrder"
+        android:text="@string/arts" />
+
+    <CheckBox
+        android:id="@+id/cbFashion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cbArts"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/cbArts"
+        android:layout_below="@+id/cbArts"
+        android:text="@string/fasion_amp_style" />
+
+    <CheckBox
+        android:id="@+id/cbSports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cbFashion"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/cbFashion"
+        android:layout_below="@+id/cbFashion"
+        android:text="@string/sports"
+        android:layout_marginBottom="30dp"/>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:layout_below="@+id/cbSports"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
