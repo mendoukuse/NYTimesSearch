@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
 import com.codepath.nytimessearch.models.Article;
+import com.codepath.nytimessearch.models.Filters;
 import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.loopj.android.http.AsyncHttpClient;
@@ -46,6 +47,7 @@ public class SearchActivity extends AppCompatActivity {
     // Filters
     String query;
     int page = 0;
+    Filters filters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +77,9 @@ public class SearchActivity extends AppCompatActivity {
                 new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        // create intent to display article
                         Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                        // get article
                         Article article = articles.get(position);
-                        // pass in article to intent
                         i.putExtra("article", article);
-                        // launch activity
                         startActivity(i);
                     }
                 }
@@ -98,6 +96,9 @@ public class SearchActivity extends AppCompatActivity {
         };
 
         rvResults.addOnScrollListener(scrollListener);
+
+        // Setup filters
+        filters = new Filters();
     }
 
     @Override
@@ -117,6 +118,8 @@ public class SearchActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
+            // Pass current settings.
+            i.putExtra("filters", filters);
             startActivityForResult(i, SETTINGS_REQUEST_CODE);
             return true;
         }
@@ -127,7 +130,8 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == SETTINGS_REQUEST_CODE) {
-            Toast.makeText(this, data.toString(), Toast.LENGTH_SHORT).show();
+            filters = (Filters) data.getSerializableExtra("filters");
+            Toast.makeText(this, filters.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 

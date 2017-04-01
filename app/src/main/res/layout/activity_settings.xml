@@ -12,15 +12,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/begin_date"
-        android:layout_alignBaseline="@+id/etBeginDate"
-        android:layout_alignBottom="@+id/etBeginDate"
+        android:layout_alignBaseline="@+id/tvBeginDate"
+        android:layout_alignBottom="@+id/tvBeginDate"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/etBeginDate"
-        android:layout_toStartOf="@+id/etBeginDate" />
+        android:layout_toLeftOf="@+id/tvBeginDate"
+        android:layout_toStartOf="@+id/tvBeginDate" />
 
-    <EditText
-        android:id="@+id/etBeginDate"
+    <TextView
+        android:id="@+id/tvBeginDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -29,7 +29,9 @@
         android:layout_marginBottom="30dp"
         android:ems="10"
         android:hint="@string/date_hint"
-        android:inputType="date" />
+        android:inputType="none"
+        android:textSize="16sp"
+        android:onClick="showCalendarDialogFragment"/>
 
     <TextView
         android:id="@+id/tvSortOrderLabel"
@@ -37,20 +39,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/etBeginDate"
-        android:layout_toLeftOf="@+id/etBeginDate"
-        android:layout_toStartOf="@+id/etBeginDate"
+        android:layout_below="@+id/tvBeginDate"
+        android:layout_toLeftOf="@+id/tvBeginDate"
+        android:layout_toStartOf="@+id/tvBeginDate"
         android:text="@string/sort_order" />
 
     <Spinner
         android:id="@+id/spSortOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etBeginDate"
+        android:layout_below="@+id/tvBeginDate"
         android:layout_toRightOf="@+id/tvSortOrderLabel"
         android:layout_toEndOf="@+id/tvSortOrderLabel"
-        android:layout_alignLeft="@+id/etBeginDate"
-        android:layout_alignStart="@+id/etBeginDate"
+        android:layout_alignLeft="@+id/tvBeginDate"
+        android:layout_alignStart="@+id/tvBeginDate"
         android:entries="@array/sort_order_array"
         android:layout_marginBottom="30dp"/>
 
