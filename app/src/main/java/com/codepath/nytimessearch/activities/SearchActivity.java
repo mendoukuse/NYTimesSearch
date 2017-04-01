@@ -6,13 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
@@ -28,12 +28,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
     final int SETTINGS_REQUEST_CODE = 1;
+    SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyyMMdd");
 
     EditText etQuery;
     RecyclerView rvResults;
@@ -46,7 +48,6 @@ public class SearchActivity extends AppCompatActivity {
 
     // Filters
     String query;
-    int page = 0;
     Filters filters;
 
     @Override
@@ -59,13 +60,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
+        articles = new ArrayList<>();
+        filters = new Filters();
+
         etQuery = (EditText) findViewById(R.id.etQuery);
         btnSearch = (Button) findViewById(R.id.btnSearch);
-
-        articles = new ArrayList<>();
+        rvResults = (RecyclerView) findViewById(R.id.rvResults);
 
         // Set up Recycler View
-        rvResults = (RecyclerView) findViewById(R.id.rvResults);
         adapter = new ArticlesAdapter(this, articles);
         rvResults.setAdapter(adapter);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
@@ -96,9 +98,6 @@ public class SearchActivity extends AppCompatActivity {
         };
 
         rvResults.addOnScrollListener(scrollListener);
-
-        // Setup filters
-        filters = new Filters();
     }
 
     @Override
@@ -131,23 +130,22 @@ public class SearchActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == SETTINGS_REQUEST_CODE) {
             filters = (Filters) data.getSerializableExtra("filters");
-            Toast.makeText(this, filters.toString(), Toast.LENGTH_SHORT).show();
+            resetApiQueryParameters(query);
+            loadDataFromApi(0);
         }
     }
 
     public void onArticleSearch(View view) {
         String q = etQuery.getText().toString();
-
-        // Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG).show();
+        etQuery.clearFocus();
         if (q != query) {
             resetApiQueryParameters(q);
+            loadDataFromApi(0);
         }
-        loadDataFromApi(page);
     }
 
     private void resetApiQueryParameters(String q) {
         query = q;
-        page = 0;
 
         int numberOfItems = adapter.getItemCount();
         if (numberOfItems > 0) {
@@ -164,7 +162,29 @@ public class SearchActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         params.put("api-key", "476d52719f654648b8622ef5830a4568");
         params.put("page", page);
-        params.put("q", query);
+
+        if (!TextUtils.isEmpty(query)) {
+            params.put("q", query);
+        }
+
+        if (!TextUtils.isEmpty(filters.getSortOrder())) {
+            params.put("sort", filters.getSortOrder().toLowerCase());
+        }
+
+        if (filters.getCategories().size() > 0) {
+            String fq = "news_desk:(";
+
+            for (int i = 0; i < filters.getCategories().size(); i++) {
+                fq += String.format("\"%s\" ", filters.getCategories().get(i));
+            }
+
+            fq += ")";
+            params.put("fq", fq);
+        }
+        if (filters.getBeginDate() != null) {
+            params.put("begin_date", apiDateFormat.format(filters.getBeginDate().getTime()));
+        }
+
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override

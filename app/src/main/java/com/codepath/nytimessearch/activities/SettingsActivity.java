@@ -19,10 +19,14 @@ import com.codepath.nytimessearch.models.Filters;
 import com.codepath.nytimessearch.models.SortOrder;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class SettingsActivity extends AppCompatActivity implements
-        DatePickerDialog.OnDateSetListener {
+public class SettingsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+    static final String ARTS = "Arts";
+    static final String FASHION = "Fashion & Style";
+    static final String SPORTS = "Sports";
+
     TextView tvBeginDate;
     Spinner spSortOrder;
     Filters filters;
@@ -34,23 +38,23 @@ public class SettingsActivity extends AppCompatActivity implements
             switch(buttonView.getId()) {
                 case R.id.cbArts:
                     if (isChecked) {
-                        filters.addCategory("Arts");
+                        filters.addCategory(ARTS);
                     } else {
-                        filters.removeCategory("Arts");
+                        filters.removeCategory(ARTS);
                     }
                     break;
                 case R.id.cbFashion:
                     if (isChecked) {
-                        filters.addCategory("Fashion & Style");
+                        filters.addCategory(FASHION);
                     } else {
-                        filters.removeCategory("Fashion & Style");
+                        filters.removeCategory(FASHION);
                     }
                     break;
                 case R.id.cbSports:
                     if (isChecked) {
-                        filters.addCategory("Sports");
+                        filters.addCategory(SPORTS);
                     } else {
-                        filters.removeCategory("Sports");
+                        filters.removeCategory(SPORTS);
                     }
                     break;
             }
@@ -90,15 +94,24 @@ public class SettingsActivity extends AppCompatActivity implements
         CheckBox cbFashion = (CheckBox) findViewById(R.id.cbFashion);
         CheckBox cbSports = (CheckBox) findViewById(R.id.cbSports);
 
+        ArrayList<String> categories = filters.getCategories();
+
+        cbArts.setChecked(categories.indexOf(ARTS) > -1);
+        cbFashion.setChecked(categories.indexOf(FASHION) > -1);
+        cbSports.setChecked(categories.indexOf(SPORTS) > -1);
+
         cbArts.setOnCheckedChangeListener(checkListener);
         cbFashion.setOnCheckedChangeListener(checkListener);
         cbSports.setOnCheckedChangeListener(checkListener);
+
     }
 
     private void setUpDateSetting() {
         sdf = new SimpleDateFormat("MM/dd/yyyy");
         tvBeginDate = (TextView) findViewById(R.id.tvBeginDate);
-        tvBeginDate.setText(sdf.format(filters.getBeginDate().getTime()));
+        if (filters.getBeginDate() != null) {
+            tvBeginDate.setText(sdf.format(filters.getBeginDate().getTime()));
+        }
     }
 
     public void showCalendarDialogFragment(View v) {
@@ -109,7 +122,7 @@ public class SettingsActivity extends AppCompatActivity implements
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        Calendar c = filters.getBeginDate();
+        Calendar c = Calendar.getInstance();
         c.set(year, month, day);
         filters.setBeginDate(c);
         tvBeginDate.setText(sdf.format(c.getTime()));

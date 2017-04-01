@@ -14,8 +14,7 @@ public class Filters implements Serializable {
     ArrayList<String> categories;
 
     public Filters() {
-        sortOrder = "Newest";
-        beginDate = Calendar.getInstance();
+        sortOrder = SortOrder.NEWEST.getName();
         categories = new ArrayList<>();
     }
 

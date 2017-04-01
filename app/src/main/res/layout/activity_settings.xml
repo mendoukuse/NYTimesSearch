@@ -87,7 +87,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignStart="@+id/cbArts"
         android:layout_below="@+id/cbArts"
-        android:text="@string/fasion_amp_style" />
+        android:text="@string/fashion_amp_style" />
 
     <CheckBox
         android:id="@+id/cbSports"
