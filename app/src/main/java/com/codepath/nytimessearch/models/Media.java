@@ -1,9 +1,12 @@
 package com.codepath.nytimessearch.models;
 
+import org.parceler.Parcel;
+
 /**
  * Created by christine_nguyen on 4/1/17.
  */
 
+@Parcel
 public class Media {
     String url;
     String format;
@@ -13,6 +16,8 @@ public class Media {
     String subtype;
     String caption;
     String copyright;
+
+    public Media() {}
 
     public String getUrl() {
         return url;
