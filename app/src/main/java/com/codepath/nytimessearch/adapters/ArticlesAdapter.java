@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.models.NewsDesk;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -35,6 +35,10 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             ivImage = (ImageView) articleView.findViewById(R.id.ivImage);
             tvSnippet = (TextView) articleView.findViewById(R.id.tvSnippet);
             tvNewsDesk = (TextView) articleView.findViewById(R.id.tvNewsDesk);
+        }
+
+        public ImageView getImageView() {
+            return ivImage;
         }
     }
 
@@ -98,9 +102,14 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         }
 
         if (!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(context).load(thumbnail).fit().into(imageView);
+            Glide.with(context).load(thumbnail).fitCenter().into(imageView);
         }
 
+    }
+
+    @Override public void onViewRecycled(ViewHolder viewHolder){
+        super.onViewRecycled(viewHolder);
+        Glide.clear(viewHolder.getImageView());
     }
 
     @Override

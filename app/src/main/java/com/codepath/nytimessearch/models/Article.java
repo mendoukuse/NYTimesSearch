@@ -52,7 +52,11 @@ public class Article {
     }
 
     public String getNewsDesk() {
-        return newsDesk;
+        if (!(TextUtils.isEmpty(newsDesk) || newsDesk.toLowerCase().equals("null") ||
+                newsDesk.toLowerCase().equals("none"))) {
+            return newsDesk;
+        }
+        return null;
     }
 
     public Article(JSONObject jsonObject) {

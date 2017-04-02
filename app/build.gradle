@@ -35,12 +35,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-}
-
-repositories {
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-}
-
-dependencies {
-    compile 'com.squareup.picasso:picasso:2.6.0-SNAPSHOT'
+    compile 'com.github.bumptech.glide:glide:3.5.2'
 }
