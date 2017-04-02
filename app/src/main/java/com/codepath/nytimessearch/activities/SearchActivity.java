@@ -27,6 +27,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class SearchActivity extends AppCompatActivity {
 
     public void setupViews() {
         articles = new ArrayList<>();
-        filters = new Filters();
+        filters = Filters.createNewFilters();
 
         etQuery = (EditText) findViewById(R.id.etQuery);
         btnSearch = (Button) findViewById(R.id.btnSearch);
@@ -81,7 +82,7 @@ public class SearchActivity extends AppCompatActivity {
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                         Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
                         Article article = articles.get(position);
-                        i.putExtra("article", article);
+                        i.putExtra("article", Parcels.wrap(article));
                         startActivity(i);
                     }
                 }
@@ -118,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
             // Pass current settings.
-            i.putExtra("filters", filters);
+            i.putExtra("filters", Parcels.wrap(filters));
             startActivityForResult(i, SETTINGS_REQUEST_CODE);
             return true;
         }
@@ -129,7 +130,8 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == SETTINGS_REQUEST_CODE) {
-            filters = (Filters) data.getSerializableExtra("filters");
+            filters = (Filters) Parcels.unwrap(data.getParcelableExtra("filters"));
+            // Assume the filters have changes so reset the query params
             resetApiQueryParameters(query);
             loadDataFromApi(0);
         }

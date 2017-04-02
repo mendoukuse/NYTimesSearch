@@ -18,6 +18,8 @@ import com.codepath.nytimessearch.fragments.DatePickerFragment;
 import com.codepath.nytimessearch.models.Filters;
 import com.codepath.nytimessearch.models.SortOrder;
 
+import org.parceler.Parcels;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,10 +68,10 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        filters = (Filters) getIntent().getSerializableExtra("filters");
+        filters = (Filters) Parcels.unwrap(getIntent().getParcelableExtra("filters"));
 
         if (filters == null) {
-            filters = new Filters();
+            filters = Filters.createNewFilters();
         }
 
         setUpDateSetting();
@@ -132,7 +134,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
         Intent settings = new Intent();
 
         filters.setSortOrder(spSortOrder.getSelectedItem().toString());
-        settings.putExtra("filters", filters);
+        settings.putExtra("filters", Parcels.wrap(filters));
         setResult(RESULT_OK, settings);
         finish();
     }

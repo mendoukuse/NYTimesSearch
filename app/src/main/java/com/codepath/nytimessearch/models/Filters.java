@@ -1,21 +1,23 @@
 package com.codepath.nytimessearch.models;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
  * Created by christine_nguyen on 4/1/17.
  */
-
-public class Filters implements Serializable {
+@Parcel
+public class Filters {
     String sortOrder;
     Calendar beginDate;
     ArrayList<String> categories;
 
-    public Filters() {
-        sortOrder = SortOrder.NEWEST.getName();
-        categories = new ArrayList<>();
+    public Filters() {}
+
+    public static Filters createNewFilters() {
+        return new Filters(SortOrder.NEWEST.getName(), null, new ArrayList());
     }
 
     public Filters(String sortOrder, Calendar beginDate, ArrayList<String> categories) {
