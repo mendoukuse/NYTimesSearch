@@ -19,6 +19,9 @@ import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
 import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.models.Filters;
+import com.codepath.nytimessearch.network.NYTimesApiInterface;
+import com.codepath.nytimessearch.network.models.NYTimesApiResponse;
+import com.codepath.nytimessearch.network.models.NYTimesSearchResponse;
 import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.loopj.android.http.AsyncHttpClient;
@@ -34,10 +37,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchActivity extends AppCompatActivity {
     final int SETTINGS_REQUEST_CODE = 1;
+    final boolean USE_RETROFIT = true;
+    public static final String BASE_URL = "https://api.nytimes.com/";
+    final static String API_KEY = "476d52719f654648b8622ef5830a4568";
     SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyyMMdd");
+    NYTimesApiInterface apiService;
 
     EditText etQuery;
     RecyclerView rvResults;
@@ -58,7 +70,19 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setUpApi();
         setupViews();
+    }
+
+    public void setUpApi() {
+        if (USE_RETROFIT) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            apiService = retrofit.create(NYTimesApiInterface.class);
+        }
     }
 
     public void setupViews() {
@@ -158,22 +182,68 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void loadDataFromApi(int page) {
-        AsyncHttpClient client = new AsyncHttpClient();
-        String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+    private void loadDataFromApiWithRetrofit(int page) {
+        String sort = getSortFilterParam();
+        String beginDate = getBeginDateParam();
+        String fq = getFacetQueryParam();
+        String q = getQueryParam();
 
-        RequestParams params = new RequestParams();
-        params.put("api-key", "476d52719f654648b8622ef5830a4568");
-        params.put("page", page);
+        Call<NYTimesApiResponse> call = apiService.searchArticles(API_KEY,
+                q,
+                page,
+                sort,
+                beginDate,
+                fq);
 
+        call.enqueue(new Callback<NYTimesApiResponse>() {
+            @Override
+            public void onResponse(Call<NYTimesApiResponse> call, Response<NYTimesApiResponse> response) {
+                NYTimesApiResponse body = response.body();
+                handleNYTimesApiResponse(body);
+            }
+
+            @Override
+            public void onFailure(Call<NYTimesApiResponse> call, Throwable t) {
+                NYTimesSearchResponse body = null;
+            }
+        });
+    }
+
+    private void handleNYTimesApiResponse(NYTimesApiResponse apiResponse) {
+        NYTimesSearchResponse response = apiResponse.getResponse();
+        setArticlesFromApi(response.getDocs());
+    }
+
+    private void setArticlesFromApi(ArrayList<Article> results) {
+        // for the recycler view
+        int currentIndex = adapter.getItemCount();
+        articles.addAll(results);
+        adapter.notifyItemRangeInserted(currentIndex, results.size());
+        Log.d("DEBUG", articles.toString());
+    }
+
+    private String getQueryParam() {
         if (!TextUtils.isEmpty(query)) {
-            params.put("q", query);
+            return query;
         }
+        return null;
+    }
 
+    private String getSortFilterParam() {
         if (!TextUtils.isEmpty(filters.getSortOrder())) {
-            params.put("sort", filters.getSortOrder().toLowerCase());
+            return filters.getSortOrder().toLowerCase();
         }
+        return null;
+    }
 
+    private String getBeginDateParam() {
+        if (filters.getBeginDate() != null) {
+            return apiDateFormat.format(filters.getBeginDate().getTime());
+        }
+        return null;
+    }
+
+    private String getFacetQueryParam() {
         if (filters.getCategories().size() > 0) {
             String fq = "news_desk:(";
 
@@ -182,12 +252,30 @@ public class SearchActivity extends AppCompatActivity {
             }
 
             fq += ")";
-            params.put("fq", fq);
+            return fq;
         }
-        if (filters.getBeginDate() != null) {
-            params.put("begin_date", apiDateFormat.format(filters.getBeginDate().getTime()));
-        }
+        return null;
+    }
 
+    private void loadDataFromApi(int page) {
+        if (USE_RETROFIT) {
+            loadDataFromApiWithRetrofit(page);
+        } else {
+            loadDataFromApiWithAsync(page);
+        }
+    }
+
+    private void loadDataFromApiWithAsync(int page) {
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = BASE_URL + "svc/search/v2/articlesearch.json";
+
+        RequestParams params = new RequestParams();
+        params.put("api-key", API_KEY);
+        params.put("page", page);
+        params.put("q", getQueryParam());
+        params.put("sort", getSortFilterParam());
+        params.put("fq", getFacetQueryParam());
+        params.put("begin_date", getBeginDateParam());
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -208,11 +296,7 @@ public class SearchActivity extends AppCompatActivity {
 
                     // for the recycler view
                     ArrayList<Article> arr = Article.fromJsonArray(articleJSONResults);
-                    int currentIndex = adapter.getItemCount();
-                    articles.addAll(arr);
-                    adapter.notifyItemRangeInserted(currentIndex, arr.size());
-                    Log.d("DEBUG", articles.toString());
-
+                    setArticlesFromApi(arr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

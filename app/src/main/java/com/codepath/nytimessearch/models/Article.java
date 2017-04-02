@@ -2,6 +2,8 @@ package com.codepath.nytimessearch.models;
 
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,10 +16,15 @@ import java.util.ArrayList;
  */
 @Parcel
 public class Article {
+    @SerializedName("web_url")
     String webUrl;
-    String headline;
+    Headline headline;
+
+    ArrayList<Media> multimedia;
+
     String thumbnail;
     String snippet;
+    @SerializedName("news_desk")
     String newsDesk;
 
     public Article() {}
@@ -27,10 +34,16 @@ public class Article {
     }
 
     public String getHeadline() {
-        return headline;
+        return headline.getMain();
     }
 
     public String getThumbnail() {
+        if (thumbnail == null && multimedia != null && multimedia.size() > 0) {
+            Media media = multimedia.get(0);
+            thumbnail = "http://www.nytimes.com/" + media.getUrl();
+        } else {
+            thumbnail = "";
+        }
         return thumbnail;
     }
 
@@ -45,7 +58,8 @@ public class Article {
     public Article(JSONObject jsonObject) {
         try {
             this.webUrl = jsonObject.getString("web_url");
-            this.headline = jsonObject.getJSONObject("headline").getString("main");
+            this.headline = new Headline();
+            this.headline.setMain(jsonObject.getJSONObject("headline").getString("main"));
             this.snippet = jsonObject.getString("snippet");
 
             String newsDesk = jsonObject.getString("news_desk");
