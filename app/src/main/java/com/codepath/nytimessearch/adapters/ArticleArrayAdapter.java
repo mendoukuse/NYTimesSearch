@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.models.Article;
+import com.codepath.nytimessearch.models.NewsDesk;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -35,8 +36,28 @@ public class ArticleArrayAdapter extends ArrayAdapter<Article> {
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.ivImage);
         TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+        TextView tvSnippet = (TextView) convertView.findViewById(R.id.tvSnippet);
+        TextView tvNewsDesk = (TextView) convertView.findViewById(R.id.tvNewsDesk);
 
         tvTitle.setText(article.getHeadline());
+
+        String snippet = article.getSnippet();
+        if (!TextUtils.isEmpty(snippet)) {
+            tvSnippet.setText(article.getSnippet());
+            tvSnippet.setVisibility(View.VISIBLE);
+        } else {
+            tvSnippet.setVisibility(View.GONE);
+        }
+
+        String newsDesk = article.getNewsDesk();
+
+        if (!TextUtils.isEmpty(newsDesk)) {
+            tvNewsDesk.setText(newsDesk);
+            tvNewsDesk.setBackgroundColor(NewsDesk.getColorForNewsDesk(newsDesk));
+            tvNewsDesk.setVisibility(View.VISIBLE);
+        } else {
+            tvSnippet.setVisibility(View.GONE);
+        }
 
         String thumbnail = article.getThumbnail();
 

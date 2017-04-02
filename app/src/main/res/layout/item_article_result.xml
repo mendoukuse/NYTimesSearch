@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/item_article_background"
     android:layout_margin="5dp"
+    android:background="@drawable/item_article_background"
+    android:orientation="vertical"
     android:padding="10dp">
 
     <ImageView
@@ -15,12 +15,39 @@
         android:layout_height="100dp"
         android:scaleType="center"
         tools:src="@mipmap/ic_launcher" />
-    
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="TextView"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif"
         android:maxLines="2"
-        android:ellipsize="end"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="18sp"
+        tools:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvSnippet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:maxLines="4"
+        tools:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvNewsDesk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorPrimaryDark"
+        android:paddingBottom="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="2dp"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        tools:text="TextView" />
 </LinearLayout>

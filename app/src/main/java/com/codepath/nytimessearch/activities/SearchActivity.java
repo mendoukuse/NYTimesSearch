@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
@@ -196,6 +197,14 @@ public class SearchActivity extends AppCompatActivity {
 
                 try {
                     articleJSONResults = response.getJSONObject("response").getJSONArray("docs");
+
+                    if (articleJSONResults.length() == 0) {
+                        // Todo handle no results;
+                        Toast.makeText(getApplicationContext(),
+                                "No results for query",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
                     // for the recycler view
                     ArrayList<Article> arr = Article.fromJsonArray(articleJSONResults);

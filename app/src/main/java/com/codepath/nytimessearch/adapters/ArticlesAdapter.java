@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.models.Article;
+import com.codepath.nytimessearch.models.NewsDesk;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -24,12 +25,16 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTitle;
         public ImageView ivImage;
+        public TextView tvSnippet;
+        public TextView tvNewsDesk;
 
         public ViewHolder(View articleView) {
             super(articleView);
 
             tvTitle = (TextView) articleView.findViewById(R.id.tvTitle);
             ivImage = (ImageView) articleView.findViewById(R.id.ivImage);
+            tvSnippet = (TextView) articleView.findViewById(R.id.tvSnippet);
+            tvNewsDesk = (TextView) articleView.findViewById(R.id.tvNewsDesk);
         }
     }
 
@@ -68,8 +73,32 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         ImageView imageView = holder.ivImage;
         String thumbnail = article.getThumbnail();
 
+        TextView snippetView = holder.tvSnippet;
+        TextView newsDeskView = holder.tvNewsDesk;
+
+        String snippet = article.getSnippet();
+        if (!TextUtils.isEmpty(snippet)) {
+            snippetView.setText(article.getSnippet());
+            snippetView.setVisibility(View.VISIBLE);
+        } else {
+            snippetView.setVisibility(View.GONE);
+        }
+
+        String newsDesk = article.getNewsDesk();
+
+        if (!TextUtils.isEmpty(newsDesk)) {
+            newsDeskView.setText(newsDesk);
+            newsDeskView.setBackgroundColor(
+                getContext()
+                        .getResources()
+                        .getColor(NewsDesk.getColorForNewsDesk(newsDesk)));
+            newsDeskView.setVisibility(View.VISIBLE);
+        } else {
+            newsDeskView.setVisibility(View.GONE);
+        }
+
         if (!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(context).load(thumbnail).into(imageView);
+            Picasso.with(context).load(thumbnail).fit().into(imageView);
         }
 
     }

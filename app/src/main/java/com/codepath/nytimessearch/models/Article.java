@@ -1,5 +1,7 @@
 package com.codepath.nytimessearch.models;
 
+import android.text.TextUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +17,8 @@ public class Article {
     String webUrl;
     String headline;
     String thumbnail;
+    String snippet;
+    String newsDesk;
 
     public Article() {}
 
@@ -30,10 +34,25 @@ public class Article {
         return thumbnail;
     }
 
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public String getNewsDesk() {
+        return newsDesk;
+    }
+
     public Article(JSONObject jsonObject) {
         try {
             this.webUrl = jsonObject.getString("web_url");
             this.headline = jsonObject.getJSONObject("headline").getString("main");
+            this.snippet = jsonObject.getString("snippet");
+
+            String newsDesk = jsonObject.getString("news_desk");
+            if (!(TextUtils.isEmpty(newsDesk) || newsDesk.toLowerCase().equals("null") ||
+                    newsDesk.toLowerCase().equals("none"))) {
+                this.newsDesk = newsDesk;
+            }
 
             JSONArray multimedia = jsonObject.getJSONArray("multimedia");
 
