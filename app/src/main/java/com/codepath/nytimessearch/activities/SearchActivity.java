@@ -2,6 +2,7 @@ package com.codepath.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.adapters.ArticlesAdapter;
@@ -238,6 +238,11 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setArticlesFromApi(ArrayList<Article> results) {
+        if (results.size() == 0) {
+            // TODO handle no results
+            Snackbar.make(rvResults, R.string.snackbar_no_results, Snackbar.LENGTH_LONG).show();
+            return;
+        }
         // for the recycler view
         int currentIndex = adapter.getItemCount();
         articles.addAll(results);
@@ -310,10 +315,7 @@ public class SearchActivity extends AppCompatActivity {
                     articleJSONResults = response.getJSONObject("response").getJSONArray("docs");
 
                     if (articleJSONResults.length() == 0) {
-                        // Todo handle no results;
-                        Toast.makeText(getApplicationContext(),
-                                "No results for query",
-                                Toast.LENGTH_LONG).show();
+                        Snackbar.make(rvResults, R.string.snackbar_no_results, Snackbar.LENGTH_LONG).show();
                         return;
                     }
 

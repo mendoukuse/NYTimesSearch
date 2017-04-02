@@ -12,4 +12,7 @@
     <string name="sports">Sports</string>
     <string name="save">Save</string>
     <string name="date_hint">MM/DD/YYYY</string>
+    <string name="snackbar_no_results">No results found</string>
+    <string name="snackbar_no_more_results">There are no more results for this query</string>
+    <string name="snackbar_action">Ok</string>
 </resources>
