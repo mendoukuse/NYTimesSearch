@@ -12,7 +12,7 @@ public enum NewsDesk {
     FASHION_AND_SYTLE("Fashion & Style", R.color.tagColorSix),
     SPORTS("Sports", R.color.tagColorTwo),
     // Generic category
-    ART("Art", R.color.tagColorFour);
+    ARTS("Arts", R.color.tagColorFour);
 
     private String label;
     private int color;

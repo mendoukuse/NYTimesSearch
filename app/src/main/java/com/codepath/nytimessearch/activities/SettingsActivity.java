@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class SettingsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-    static final String ARTS = "Art";
+    static final String ARTS = "Arts";
     static final String FASHION = "Fashion & Style";
     static final String SPORTS = "Sports";
 
