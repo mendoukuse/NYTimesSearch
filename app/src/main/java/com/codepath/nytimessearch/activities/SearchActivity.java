@@ -2,16 +2,18 @@ package com.codepath.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -51,9 +53,7 @@ public class SearchActivity extends AppCompatActivity {
     SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyyMMdd");
     NYTimesApiInterface apiService;
 
-    EditText etQuery;
     RecyclerView rvResults;
-    Button btnSearch;
 
     ArrayList<Article> articles;
     ArticlesAdapter adapter;
@@ -89,8 +89,6 @@ public class SearchActivity extends AppCompatActivity {
         articles = new ArrayList<>();
         filters = Filters.createNewFilters();
 
-        etQuery = (EditText) findViewById(R.id.etQuery);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
         rvResults = (RecyclerView) findViewById(R.id.rvResults);
 
         // Set up Recycler View
@@ -129,8 +127,42 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_search, menu);
-        return true;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // perform query;
+
+                int searchEditId = android.support.v7.appcompat.R.id.search_src_text;
+
+                EditText etQuery = (EditText) searchView.findViewById(searchEditId);
+
+                String q = etQuery.getText().toString();
+
+                if (q != query) {
+                    resetApiQueryParameters(q);
+                    loadDataFromApi(0);
+                }
+
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        searchItem.expandActionView();
+        searchView.requestFocus();
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -158,15 +190,6 @@ public class SearchActivity extends AppCompatActivity {
             filters = (Filters) Parcels.unwrap(data.getParcelableExtra("filters"));
             // Assume the filters have changes so reset the query params
             resetApiQueryParameters(query);
-            loadDataFromApi(0);
-        }
-    }
-
-    public void onArticleSearch(View view) {
-        String q = etQuery.getText().toString();
-        etQuery.clearFocus();
-        if (q != query) {
-            resetApiQueryParameters(q);
             loadDataFromApi(0);
         }
     }
