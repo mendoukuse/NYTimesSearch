@@ -145,7 +145,6 @@ public class SearchActivity extends AppCompatActivity {
                     resetApiQueryParameters(q);
                     loadDataFromApi(0);
                 }
-                etQuery.clearFocus();
                 searchView.clearFocus();
                 return true;
             }
