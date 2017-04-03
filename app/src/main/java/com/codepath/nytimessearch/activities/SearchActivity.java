@@ -93,6 +93,7 @@ public class SearchActivity extends AppCompatActivity {
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
                 2,
                 StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         rvResults.setLayoutManager(layoutManager);
 
         ItemClickSupport.addTo(rvResults).setOnItemClickListener(
@@ -144,7 +145,7 @@ public class SearchActivity extends AppCompatActivity {
                     resetApiQueryParameters(q);
                     loadDataFromApi(0);
                 }
-
+                etQuery.clearFocus();
                 searchView.clearFocus();
                 return true;
             }
