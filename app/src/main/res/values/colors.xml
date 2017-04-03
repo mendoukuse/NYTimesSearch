@@ -9,4 +9,6 @@
     <color name="tagColorFour">#C133FF</color>
     <color name="tagColorFive">#FF33D7</color>
     <color name="tagColorSix">#FF3371</color>
+    <color name="textColorTertiaryField">#8a8a8a</color>
+    <color name="textColorLabel">#ADADAD</color>
 </resources>

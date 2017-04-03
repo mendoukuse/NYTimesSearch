@@ -16,6 +16,9 @@ import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.models.NewsDesk;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +27,9 @@ import java.util.List;
 
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHolder> {
     static final int BASIC = 0, WITH_IMAGE = 1;
+    static final SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+    static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTitle;
@@ -31,6 +37,8 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         public TextView tvNewsDesk;
         public TextView tvNewsDeskLabel;
         public LinearLayout llNewsDesk;
+        public TextView tvPubDateLabel;
+        public TextView tvPubDate;
 
         public ViewHolder(View articleView) {
             super(articleView);
@@ -40,6 +48,8 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             tvNewsDesk = (TextView) articleView.findViewById(R.id.tvNewsDesk);
             tvNewsDeskLabel = (TextView) articleView.findViewById(R.id.tvNewsDeskLabel);
             llNewsDesk = (LinearLayout) articleView.findViewById(R.id.llNewsDesk);
+            tvPubDateLabel = (TextView) articleView.findViewById(R.id.tvPubDateLabel);
+            tvPubDate = (TextView) articleView.findViewById(R.id.tvPubDate);
 
             // Create the TypeFace from the TTF asset
             Typeface boldFont = Typeface.createFromAsset(articleView.getResources().getAssets(), "fonts/AbhayaLibre-ExtraBold.ttf");
@@ -51,6 +61,8 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             tvSnippet.setTypeface(bodyFont);
             tvNewsDesk.setTypeface(labelFont);
             tvNewsDeskLabel.setTypeface(labelFont);
+            tvPubDate.setTypeface(labelFont);
+            tvPubDateLabel.setTypeface(labelFont);
         }
     }
 
@@ -139,12 +151,22 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         TextView newsDeskView = holder.tvNewsDesk;
         LinearLayout llNewsDeskView = holder.llNewsDesk;
 
+        TextView pubDateView = holder.tvPubDate;
+
         String snippet = article.getSnippet();
         if (!TextUtils.isEmpty(snippet)) {
             snippetView.setText(article.getSnippet());
             snippetView.setVisibility(View.VISIBLE);
         } else {
             snippetView.setVisibility(View.GONE);
+        }
+
+
+        try {
+            Date publicationDate = df.parse(article.getPubDate());
+            pubDateView.setText(sdf.format(publicationDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         String newsDesk = article.getNewsDesk();
