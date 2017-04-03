@@ -23,10 +23,10 @@ import java.util.List;
  */
 
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHolder> {
+    static final int BASIC = 0, WITH_IMAGE = 1;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTitle;
-        public ImageView ivImage;
         public TextView tvSnippet;
         public TextView tvNewsDesk;
         public TextView tvNewsDeskLabel;
@@ -36,7 +36,6 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             super(articleView);
 
             tvTitle = (TextView) articleView.findViewById(R.id.tvTitle);
-            ivImage = (ImageView) articleView.findViewById(R.id.ivImage);
             tvSnippet = (TextView) articleView.findViewById(R.id.tvSnippet);
             tvNewsDesk = (TextView) articleView.findViewById(R.id.tvNewsDesk);
             tvNewsDeskLabel = (TextView) articleView.findViewById(R.id.tvNewsDeskLabel);
@@ -52,6 +51,16 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             tvSnippet.setTypeface(bodyFont);
             tvNewsDesk.setTypeface(labelFont);
             tvNewsDeskLabel.setTypeface(labelFont);
+        }
+    }
+
+    public static class ViewHolderWithImage extends ViewHolder {
+        public ImageView ivImage;
+
+        public ViewHolderWithImage(View articleView) {
+            super(articleView);
+
+            ivImage = (ImageView) articleView.findViewById(R.id.ivImage);
         }
 
         public ImageView getImageView() {
@@ -72,27 +81,59 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
     }
 
     @Override
+    public int getItemViewType(int position) {
+        //More to come
+        Article article = articles.get(position);
+        String thumbnail = article.getThumbnail();
+        if (TextUtils.isEmpty(thumbnail)) {
+            return BASIC;
+        } else {
+            return WITH_IMAGE;
+        }
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
+        ViewHolder viewHolder;
 
-        // inflate the custom layout
-        View articleView = inflater.inflate(R.layout.item_article_result, parent, false);
+        switch (viewType) {
+            case WITH_IMAGE:
+                View articleView = inflater.inflate(R.layout.item_article_result, parent, false);
+                viewHolder = new ViewHolderWithImage(articleView);
+                break;
+            case BASIC:
+            default:
+                View articleViewNoImage = inflater.inflate(R.layout.item_article_result_no_image, parent, false);
+                viewHolder = new ViewHolder(articleViewNoImage);
+                break;
+        }
 
-        ViewHolder viewHolder = new ViewHolder(articleView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        switch (holder.getItemViewType()) {
+            case WITH_IMAGE:
+                configureViewHolder(holder, position);
+                configureViewHolderWithImage((ViewHolderWithImage) holder, position);
+                break;
+            case BASIC:
+            default:
+                configureViewHolder(holder, position);
+                break;
+        }
+    }
+
+
+    public void configureViewHolder(ViewHolder holder, int position) {
         // populate the data
         Article article = articles.get(position);
 
         TextView textView = holder.tvTitle;
         textView.setText(article.getHeadline());
-
-        ImageView imageView = holder.ivImage;
-        String thumbnail = article.getThumbnail();
 
         TextView snippetView = holder.tvSnippet;
         TextView newsDeskView = holder.tvNewsDesk;
@@ -111,23 +152,34 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         if (!TextUtils.isEmpty(newsDesk)) {
             newsDeskView.setText(newsDesk);
             newsDeskView.setTextColor(
-                getContext()
-                        .getResources()
-                        .getColor(NewsDesk.getColorForNewsDesk(newsDesk)));
+                    getContext()
+                            .getResources()
+                            .getColor(NewsDesk.getColorForNewsDesk(newsDesk)));
             llNewsDeskView.setVisibility(View.VISIBLE);
         } else {
             llNewsDeskView.setVisibility(View.GONE);
         }
+    }
+
+    public void configureViewHolderWithImage(ViewHolderWithImage holder, int position) {
+        Article article = articles.get(position);
+        ImageView imageView = holder.ivImage;
+
+        String thumbnail = article.getThumbnail();
 
         if (!TextUtils.isEmpty(thumbnail)) {
             Glide.with(context).load(thumbnail).fitCenter().into(imageView);
         }
-
     }
 
-    @Override public void onViewRecycled(ViewHolder viewHolder){
-        super.onViewRecycled(viewHolder);
-        Glide.clear(viewHolder.getImageView());
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        super.onViewRecycled(holder);
+
+        if (holder.getItemViewType() == WITH_IMAGE) {
+            Glide.clear(((ViewHolderWithImage) holder).getImageView());
+        }
     }
 
     @Override

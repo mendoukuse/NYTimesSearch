@@ -1,5 +1,7 @@
 package com.codepath.nytimessearch.models;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcel;
 
 /**
@@ -21,6 +23,10 @@ public class Media {
 
     public String getUrl() {
         return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getFormat() {
@@ -49,5 +55,18 @@ public class Media {
 
     public String getCopyright() {
         return copyright;
+    }
+
+    static Media fromJson(JSONObject multimediaJson) {
+        Media m = new Media();
+
+        try {
+            m.setUrl(multimediaJson.getString("url"));
+            // Don't care about other fields
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return m;
     }
 }

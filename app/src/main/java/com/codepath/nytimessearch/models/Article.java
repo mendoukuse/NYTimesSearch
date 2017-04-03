@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by christine_nguyen on 3/28/17.
@@ -22,7 +23,6 @@ public class Article {
 
     ArrayList<Media> multimedia;
 
-    String thumbnail;
     String snippet;
     @SerializedName("news_desk")
     String newsDesk;
@@ -40,8 +40,11 @@ public class Article {
     }
 
     public String getThumbnail() {
-        if (thumbnail == null && multimedia != null && multimedia.size() > 0) {
-            Media media = multimedia.get(0);
+        int numImages = multimedia == null ? 0 : multimedia.size();
+        String thumbnail = null;
+        if (thumbnail == null && numImages > 0) {
+            int mediaIndex = new Random().nextInt(numImages);
+            Media media = multimedia.get(mediaIndex);
             thumbnail = "http://www.nytimes.com/" + media.getUrl();
         } else {
             thumbnail = "";
@@ -84,11 +87,15 @@ public class Article {
             JSONArray multimedia = jsonObject.getJSONArray("multimedia");
 
             if (multimedia.length() >= 1) {
-                JSONObject multimediaJson = multimedia.getJSONObject(0);
-                this.thumbnail = "http://www.nytimes.com/" + multimediaJson.getString("url");
-            } else {
-                this.thumbnail = "";
+                this.multimedia = new ArrayList<Media>();
+                for (int x = 0; x < multimedia.length(); x++) {
+                    JSONObject multimediaJson = multimedia.getJSONObject(x);
+                    Media media = Media.fromJson(multimediaJson);
+
+                    this.multimedia.add(media);
+                }
             }
+
         } catch (JSONException e) {
 
         }
