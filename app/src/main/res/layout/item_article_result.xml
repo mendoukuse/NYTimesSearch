@@ -11,9 +11,12 @@
 
     <ImageView
         android:id="@+id/ivImage"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_marginBottom="10dp"
+        android:adjustViewBounds="true"
         android:scaleType="center"
+        android:visibility="visible"
         tools:src="@mipmap/ic_launcher" />
 
     <TextView
@@ -22,10 +25,11 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:fontFamily="sans-serif"
+        android:lineSpacingMultiplier="1"
         android:maxLines="2"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="18sp"
-        tools:text="TextView" />
+        tools:text="This is a long text view title that should be truncated to two lines" />
 
     <TextView
         android:id="@+id/tvSnippet"
@@ -36,18 +40,29 @@
         android:maxLines="4"
         tools:text="TextView" />
 
-    <TextView
-        android:id="@+id/tvNewsDesk"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llNewsDesk"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@color/colorPrimaryDark"
-        android:paddingBottom="2dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp"
-        android:textColor="@android:color/white"
-        android:textSize="10sp"
-        android:textStyle="bold"
-        tools:text="TextView" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvNewsDeskLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="@string/news_desk"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tvNewsDesk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="10sp"
+            android:textStyle="italic"
+            tools:text="TextView" />
+    </LinearLayout>
+
 </LinearLayout>

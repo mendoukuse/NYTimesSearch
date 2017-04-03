@@ -1,12 +1,14 @@
 package com.codepath.nytimessearch.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +29,8 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
         public ImageView ivImage;
         public TextView tvSnippet;
         public TextView tvNewsDesk;
+        public TextView tvNewsDeskLabel;
+        public LinearLayout llNewsDesk;
 
         public ViewHolder(View articleView) {
             super(articleView);
@@ -35,6 +39,19 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
             ivImage = (ImageView) articleView.findViewById(R.id.ivImage);
             tvSnippet = (TextView) articleView.findViewById(R.id.tvSnippet);
             tvNewsDesk = (TextView) articleView.findViewById(R.id.tvNewsDesk);
+            tvNewsDeskLabel = (TextView) articleView.findViewById(R.id.tvNewsDeskLabel);
+            llNewsDesk = (LinearLayout) articleView.findViewById(R.id.llNewsDesk);
+
+            // Create the TypeFace from the TTF asset
+            Typeface boldFont = Typeface.createFromAsset(articleView.getResources().getAssets(), "fonts/AbhayaLibre-ExtraBold.ttf");
+            Typeface bodyFont = Typeface.createFromAsset(articleView.getResources().getAssets(), "fonts/AbhayaLibre-Regular.ttf");
+            Typeface labelFont = Typeface.createFromAsset(articleView.getResources().getAssets(), "fonts/AbhayaLibre-Medium.ttf");
+
+            // Assign the typeface to the views
+            tvTitle.setTypeface(boldFont);
+            tvSnippet.setTypeface(bodyFont);
+            tvNewsDesk.setTypeface(labelFont);
+            tvNewsDeskLabel.setTypeface(labelFont);
         }
 
         public ImageView getImageView() {
@@ -79,6 +96,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
 
         TextView snippetView = holder.tvSnippet;
         TextView newsDeskView = holder.tvNewsDesk;
+        LinearLayout llNewsDeskView = holder.llNewsDesk;
 
         String snippet = article.getSnippet();
         if (!TextUtils.isEmpty(snippet)) {
@@ -92,13 +110,13 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.ViewHo
 
         if (!TextUtils.isEmpty(newsDesk)) {
             newsDeskView.setText(newsDesk);
-            newsDeskView.setBackgroundColor(
+            newsDeskView.setTextColor(
                 getContext()
                         .getResources()
                         .getColor(NewsDesk.getColorForNewsDesk(newsDesk)));
-            newsDeskView.setVisibility(View.VISIBLE);
+            llNewsDeskView.setVisibility(View.VISIBLE);
         } else {
-            newsDeskView.setVisibility(View.GONE);
+            llNewsDeskView.setVisibility(View.GONE);
         }
 
         if (!TextUtils.isEmpty(thumbnail)) {

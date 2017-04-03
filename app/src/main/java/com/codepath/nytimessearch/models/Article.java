@@ -52,8 +52,7 @@ public class Article {
     }
 
     public String getNewsDesk() {
-        if (!(TextUtils.isEmpty(newsDesk) || newsDesk.toLowerCase().equals("null") ||
-                newsDesk.toLowerCase().equals("none"))) {
+        if (!(TextUtils.isEmpty(newsDesk) || newsDesk.toLowerCase().equals("null"))) {
             return newsDesk;
         }
         return null;

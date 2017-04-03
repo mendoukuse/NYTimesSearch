@@ -15,4 +15,5 @@
     <string name="snackbar_no_results">No results found</string>
     <string name="snackbar_no_more_results">There are no more results for this query</string>
     <string name="snackbar_action">Ok</string>
+    <string name="news_desk">News Desk:</string>
 </resources>
