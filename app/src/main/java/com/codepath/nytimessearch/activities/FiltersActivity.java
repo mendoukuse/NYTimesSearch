@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class SettingsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class FiltersActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     static final String ARTS = "Arts";
     static final String FASHION = "Fashion & Style";
     static final String SPORTS = "Sports";
@@ -66,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_filters);
 
         filters = (Filters) Parcels.unwrap(getIntent().getParcelableExtra("filters"));
 

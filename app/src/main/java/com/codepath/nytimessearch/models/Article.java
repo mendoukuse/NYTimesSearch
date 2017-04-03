@@ -26,6 +26,8 @@ public class Article {
     String snippet;
     @SerializedName("news_desk")
     String newsDesk;
+    @SerializedName("pub_date")
+    String pubDate;
 
     public Article() {}
 
@@ -56,6 +58,14 @@ public class Article {
             return newsDesk;
         }
         return null;
+    }
+
+    public ArrayList<Media> getMultimedia() {
+        return multimedia;
+    }
+
+    public String getPubDate() {
+        return pubDate;
     }
 
     public Article(JSONObject jsonObject) {

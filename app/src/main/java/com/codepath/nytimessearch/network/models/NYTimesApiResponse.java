@@ -8,6 +8,7 @@ public class NYTimesApiResponse {
     NYTimesSearchResponse response;
     String status;
     String copyright;
+    String message;
 
     public NYTimesSearchResponse getResponse() {
         return response;
@@ -19,5 +20,9 @@ public class NYTimesApiResponse {
 
     public String getCopyright() {
         return copyright;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

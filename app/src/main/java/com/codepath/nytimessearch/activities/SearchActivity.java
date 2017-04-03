@@ -2,6 +2,7 @@ package com.codepath.nytimessearch.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,19 +27,12 @@ import com.codepath.nytimessearch.network.models.NYTimesApiResponse;
 import com.codepath.nytimessearch.network.models.NYTimesSearchResponse;
 import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.nytimessearch.utils.ItemClickSupport;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.Header;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,7 +41,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SearchActivity extends AppCompatActivity {
     final int SETTINGS_REQUEST_CODE = 1;
-    final boolean USE_RETROFIT = true;
     public static final String BASE_URL = "https://api.nytimes.com/";
     final static String API_KEY = "476d52719f654648b8622ef5830a4568";
     SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -63,6 +56,9 @@ public class SearchActivity extends AppCompatActivity {
     // Filters
     String query;
     Filters filters;
+    int retryPage;
+
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +71,14 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setUpApi() {
-        if (USE_RETROFIT) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+        handler = new Handler();
 
-            apiService = retrofit.create(NYTimesApiInterface.class);
-        }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        apiService = retrofit.create(NYTimesApiInterface.class);
     }
 
     public void setupViews() {
@@ -173,8 +169,8 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent i = new Intent(this, SettingsActivity.class);
+        if (id == R.id.action_filters) {
+            Intent i = new Intent(this, FiltersActivity.class);
             // Pass current settings.
             i.putExtra("filters", Parcels.wrap(filters));
             startActivityForResult(i, SETTINGS_REQUEST_CODE);
@@ -183,6 +179,7 @@ public class SearchActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -205,11 +202,12 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private void loadDataFromApiWithRetrofit(int page) {
+    private void loadDataFromApi(int page) {
         String sort = getSortFilterParam();
         String beginDate = getBeginDateParam();
         String fq = getFacetQueryParam();
         String q = getQueryParam();
+        retryPage = page;
 
         Call<NYTimesApiResponse> call = apiService.searchArticles(API_KEY,
                 q,
@@ -222,17 +220,43 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<NYTimesApiResponse> call, Response<NYTimesApiResponse> response) {
                 NYTimesApiResponse body = response.body();
-                handleNYTimesApiResponse(body);
+                int responseCode = response.raw().code();
+
+                if (responseCode == 200 && body != null) {
+                    handleNYTimesApiResponse(body);
+                } else if (responseCode == 429) {
+                    // retry api call after timeout
+                    handler.postDelayed(runnableRetryCode, 2000);
+                } else {
+                    handleApiFailure();
+                }
             }
 
             @Override
             public void onFailure(Call<NYTimesApiResponse> call, Throwable t) {
-                NYTimesSearchResponse body = null;
+                handleApiFailure();
             }
         });
     }
 
+    private Runnable runnableRetryCode = new Runnable() {
+        @Override
+        public void run() {
+            loadDataFromApi(retryPage);
+            Log.d("Handlers", "Called on main thread");
+            Log.d("DEBUG", String.format("Retrying api call for query: %s, page: %s", query, retryPage));
+        }
+    };
+
+    private void handleApiFailure() {
+        Snackbar.make(rvResults, R.string.snackbar_no_api_response, Snackbar.LENGTH_LONG).show();
+    }
+
     private void handleNYTimesApiResponse(NYTimesApiResponse apiResponse) {
+        if (apiResponse == null || apiResponse.getResponse() == null) {
+            handleApiFailure();
+            return;
+        }
         NYTimesSearchResponse response = apiResponse.getResponse();
         setArticlesFromApi(response.getDocs());
     }
@@ -285,52 +309,4 @@ public class SearchActivity extends AppCompatActivity {
         return null;
     }
 
-    private void loadDataFromApi(int page) {
-        if (USE_RETROFIT) {
-            loadDataFromApiWithRetrofit(page);
-        } else {
-            loadDataFromApiWithAsync(page);
-        }
-    }
-
-    private void loadDataFromApiWithAsync(int page) {
-        AsyncHttpClient client = new AsyncHttpClient();
-        String url = BASE_URL + "svc/search/v2/articlesearch.json";
-
-        RequestParams params = new RequestParams();
-        params.put("api-key", API_KEY);
-        params.put("page", page);
-        params.put("q", getQueryParam());
-        params.put("sort", getSortFilterParam());
-        params.put("fq", getFacetQueryParam());
-        params.put("begin_date", getBeginDateParam());
-
-        client.get(url, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
-                JSONArray articleJSONResults = null;
-
-                try {
-                    articleJSONResults = response.getJSONObject("response").getJSONArray("docs");
-
-                    if (articleJSONResults.length() == 0) {
-                        Snackbar.make(rvResults, R.string.snackbar_no_results, Snackbar.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    // for the recycler view
-                    ArrayList<Article> arr = Article.fromJsonArray(articleJSONResults);
-                    setArticlesFromApi(arr);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
-    }
 }

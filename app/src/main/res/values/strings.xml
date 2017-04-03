@@ -14,6 +14,8 @@
     <string name="date_hint">MM/DD/YYYY</string>
     <string name="snackbar_no_results">No results found</string>
     <string name="snackbar_no_more_results">There are no more results for this query</string>
-    <string name="snackbar_action">Ok</string>
+    <string name="snackbar_no_api_response">There was an error fetching your articles</string>
     <string name="news_desk">News Desk:</string>
+    <string name="filters">Filters</string>
+    <string name="share">Share</string>
 </resources>
